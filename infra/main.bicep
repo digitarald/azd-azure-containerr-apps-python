@@ -17,9 +17,7 @@ param applicationInsightsDashboardName string = ''
 param applicationInsightsName string = ''
 param logAnalyticsName string = ''
 
-
 param apiAppExists bool = false
-
 
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
@@ -34,8 +32,6 @@ resource resourceGroup 'Microsoft.Resources/resourceGroups@2021-04-01' = {
   location: location
   tags: tags
 }
-
-
 
 // Container apps host (including container registry)
 module containerApps './core/host/container-apps.bicep' = {
