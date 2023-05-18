@@ -2,7 +2,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - digitarald/working-basic-plugin
+      - main
 
 # https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure?tabs=azure-portal%2Clinux#set-up-azure-login-with-openid-connect-authentication
 permissions:
@@ -15,10 +15,12 @@ jobs:
     container:
       image: mcr.microsoft.com/azure-dev-cli-apps:latest
     env:
-      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+        AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+        AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+        AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -45,18 +47,17 @@ jobs:
         shell: pwsh
         env:
           AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-        
+
       - name: Provision Azure Resources - Azure Container Apps, Container Registry, Azure Monitor, Log Analytics
         run: azd provision --no-prompt
         env:
-          AZURE_ENV_NAME: ${{ secrets.AZURE_ENV_NAME }}
-          AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          
+          AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+          AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
       - name: Deploy changes to Azure Container Apps
         run: azd deploy --no-prompt
         env:
-          AZURE_ENV_NAME: ${{ secrets.AZURE_ENV_NAME }}
-          AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
-          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-
+          AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+          AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+          AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
